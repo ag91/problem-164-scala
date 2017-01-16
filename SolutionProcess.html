@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="author" content="Andrea">
+  <title>Solve 164 in Scala</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">Solve 164 in Scala</h1>
+<p class="author">Andrea</p>
+</header>
+<p>Let's try to solve this in Scala: <a href="https://www.4clojure.com/problem/164" class="uri">https://www.4clojure.com/problem/164</a></p>
+<p>We create a directory structure for sbt:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> -p /tmp/problem-164-in-scala/problem164scala/src/test/scala /tmp/problem-164-in-scala/problem164scala/src/main/scala</code></pre></div>
+<p>First we define the software we are going to use to have a reproducible build:</p>
+<pre class="text"><code>{ }:
+let
+pkgs = import &lt;nixpkgs&gt; {};
+stdenv = pkgs.stdenv;
+sbt = pkgs.sbt;
+scala = pkgs.scala;
+
+in stdenv.mkDerivation {
+name = &quot;test_derivation&quot;;
+
+buildInputs = [ sbt scala ];
+}
+</code></pre>
+<p>We create a sandbox with this software installed:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">nix-shell</span> .</code></pre></div>
+<p>Then we import the test frameworks to test our solution:</p>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala">name := <span class="st">&quot;problem164scala&quot;</span>
+
+<span class="co">// unit testing</span>
+libraryDependencies += <span class="st">&quot;org.scalactic&quot;</span> %% <span class="st">&quot;scalactic&quot;</span> % <span class="st">&quot;3.0.1&quot;</span>
+libraryDependencies += <span class="st">&quot;org.scalatest&quot;</span> %% <span class="st">&quot;scalatest&quot;</span> % <span class="st">&quot;3.0.1&quot;</span> % <span class="st">&quot;test&quot;</span></code></pre></div>
+<p>We create an sbt project for the Emacs Ensime mode:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">sbt</span> clean ensimeConfig</code></pre></div>
+<p>Then let's translates the tests given by <a href="https://www.4clojure.com/problem/164" class="uri">https://www.4clojure.com/problem/164</a>:</p>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">package</span> problem164scala
+
+<span class="kw">import</span> org.<span class="fu">scalatest</span>.<span class="fu">_</span>
+
+<span class="kw">class</span> GivenTests <span class="kw">extends</span> FunSuite <span class="kw">with</span> Matchers {
+
+<span class="kw">def</span> <span class="fu">makeDFA</span>(states: Set[String], alphabet: Set[String], start: String, accepts: Set[String], transitions: Set[(String,String,String)]) = {
+<span class="kw">val</span> states1 = states.<span class="fu">map</span>((x:String) =&gt; State(x))
+<span class="kw">val</span> alphabet1 = alphabet.<span class="fu">map</span>((x:String) =&gt; <span class="fu">Word</span>(x))
+<span class="kw">val</span> start1 = State(start)
+<span class="kw">val</span> accepts1 = accepts.<span class="fu">map</span>((x:String) =&gt; State(x))
+<span class="kw">val</span> transitions1 = transitions.<span class="fu">map</span>((flt:(String,String,String)) =&gt; <span class="fu">Transition</span>(State(flt.<span class="fu">_1</span>), <span class="fu">Word</span>(flt.<span class="fu">_2</span>), State(flt.<span class="fu">_3</span>)))
+<span class="fu">DFA</span>(states1,alphabet1,start1,accepts1,transitions1)
+}
+
+<span class="fu">test</span>(<span class="st">&quot;produce a set {&#39;a&#39; &#39;ab&#39; &#39;abc&#39;} for the given DFA&quot;</span>) {
+<span class="kw">val</span> states = Set(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;q3&quot;</span>)
+<span class="kw">val</span> alphabet = Set(<span class="st">&quot;a&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;c&quot;</span>)
+<span class="kw">val</span> start = <span class="st">&quot;q0&quot;</span>
+<span class="kw">val</span> accepts = Set(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;q3&quot;</span>)
+<span class="kw">val</span> transitions = Set((<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;a&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;c&quot;</span>,<span class="st">&quot;q3&quot;</span>))
+<span class="kw">val</span> dfa = <span class="fu">makeDFA</span>(states,alphabet,start,accepts,transitions)
+Solution.<span class="fu">solve</span>(dfa) should <span class="fu">be</span> (Set(<span class="st">&quot;a&quot;</span>,<span class="st">&quot;ab&quot;</span>,<span class="st">&quot;abc&quot;</span>))
+}
+
+<span class="fu">test</span>(<span class="st">&quot;produce a set {&#39;hi&#39; &#39;hey&#39; &#39;hello&#39;} for the given DFA&quot;</span>) {
+<span class="kw">val</span> states = Set(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;q4&quot;</span>,<span class="st">&quot;q5&quot;</span>,<span class="st">&quot;q6&quot;</span>,<span class="st">&quot;q7&quot;</span>)
+<span class="kw">val</span> alphabet = Set(<span class="st">&quot;e&quot;</span>,<span class="st">&quot;h&quot;</span>,<span class="st">&quot;i&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;o&quot;</span>,<span class="st">&quot;y&quot;</span>)
+<span class="kw">val</span> start = <span class="st">&quot;q0&quot;</span>
+<span class="kw">val</span> accepts = Set(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;q4&quot;</span>,<span class="st">&quot;q7&quot;</span>)
+<span class="kw">val</span> transitions = Set((<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;h&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;i&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;e&quot;</span>,<span class="st">&quot;q3&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;q5&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;q4&quot;</span>),(<span class="st">&quot;q5&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;q6&quot;</span>),(<span class="st">&quot;q6&quot;</span>,<span class="st">&quot;o&quot;</span>,<span class="st">&quot;q7&quot;</span>))
+<span class="kw">val</span> dfa = <span class="fu">makeDFA</span>(states,alphabet,start,accepts,transitions)
+Solution.<span class="fu">solve</span>(dfa) should <span class="fu">be</span> (Set(<span class="st">&quot;hi&quot;</span>,<span class="st">&quot;hey&quot;</span>,<span class="st">&quot;hello&quot;</span>))
+}
+
+
+<span class="fu">test</span>(<span class="st">&quot;produce set created by list comprehension for the given DFA&quot;</span>) {
+<span class="kw">val</span> states = Set(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;q4&quot;</span>)
+<span class="kw">val</span> alphabet = Set(<span class="st">&quot;v&quot;</span>,<span class="st">&quot;w&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;z&quot;</span>)
+<span class="kw">val</span> start = <span class="st">&quot;q0&quot;</span>
+<span class="kw">val</span> accepts = Set(<span class="st">&quot;q4&quot;</span>)
+<span class="kw">val</span> transitions = Set((<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;v&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;w&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;z&quot;</span>,<span class="st">&quot;q1&quot;</span>),
+         (<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;v&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;w&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;z&quot;</span>,<span class="st">&quot;q2&quot;</span>),
+         (<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;v&quot;</span>,<span class="st">&quot;q3&quot;</span>),(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;w&quot;</span>,<span class="st">&quot;q3&quot;</span>),(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;q3&quot;</span>),(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;q3&quot;</span>),(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;z&quot;</span>,<span class="st">&quot;q3&quot;</span>),
+         (<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;v&quot;</span>,<span class="st">&quot;q4&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;w&quot;</span>,<span class="st">&quot;q4&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;q4&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;q4&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;z&quot;</span>,<span class="st">&quot;q4&quot;</span>))
+<span class="kw">val</span> dfa = <span class="fu">makeDFA</span>(states,alphabet,start,accepts,transitions)
+<span class="kw">val</span> s = <span class="st">&quot;vwxyz&quot;</span>
+<span class="kw">val</span> result =
+(<span class="kw">for</span>
+(v &lt;- <span class="dv">0</span> until <span class="dv">5</span>;
+w &lt;- <span class="dv">0</span> until <span class="dv">5</span>;
+x &lt;- <span class="dv">0</span> until <span class="dv">5</span>;
+y &lt;- <span class="dv">0</span> until <span class="dv">5</span>) 
+<span class="kw">yield</span>
+(<span class="fu">s</span>(v)::<span class="fu">s</span>(w)::<span class="fu">s</span>(x)::<span class="fu">s</span>(y)::Nil).<span class="fu">mkString</span>
+)
+Solution.<span class="fu">solve</span>(dfa) should <span class="fu">be</span> (result.<span class="fu">toSet</span>)
+}
+
+
+
+<span class="co">// FIXME traduce tests from clojure https://www.4clojure.com/problem/164</span>
+}</code></pre></div>
+<p>And let's satisfy the tests writing some code:</p>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">package</span> problem164scala
+
+<span class="kw">case</span> <span class="kw">class</span> State[S](state: S)
+
+<span class="kw">case</span> <span class="kw">class</span> Word[W](word: W)
+
+<span class="kw">case</span> <span class="kw">class</span> Transition[S,W](from: State[S], label: Word[W], to: State[S])
+
+<span class="kw">case</span> <span class="kw">class</span> DFA[S,W](states: Set[State[S]], alphabet: Set[Word[W]], start: State[S], accepts: Set[State[S]], transitions: Set[Transition[S,W]])
+
+<span class="kw">object</span> Solution {
+
+<span class="kw">def</span> <span class="fu">solve</span>(dfa: DFA[String,String]): Set[String] = {
+
+<span class="kw">def</span> <span class="fu">collectFinished</span>(_starts: =&gt; Set[(State[String],String)], _acc: Set[String]) : Set[String] = {
+<span class="kw">lazy</span> <span class="kw">val</span> starts = _starts
+<span class="kw">def</span> <span class="fu">f1</span>(acc: Set[String], kv: (State[String],String)) : Set[String] = {
+kv <span class="kw">match</span> {
+<span class="kw">case</span> (k,v) =&gt; {
+dfa.<span class="fu">accepts</span>.<span class="fu">contains</span>(k) <span class="kw">match</span> {
+<span class="kw">case</span> <span class="kw">true</span> =&gt; <span class="co">// we can return the string</span>
+acc + v
+<span class="kw">case</span> <span class="kw">false</span> =&gt; <span class="co">//we cannot return the string</span>
+acc
+}
+}
+}
+}
+starts.<span class="fu">foldLeft</span>(_acc)(f1)      
+}
+
+<span class="kw">def</span> <span class="fu">leaveOnlyTransitionable</span>(_starts: =&gt; Set[(State[String],String)]): Set[(State[String],String)] = {
+<span class="co">// get all accepted states from which no transition start</span>
+<span class="kw">val</span> ss = dfa.<span class="fu">accepts</span>.<span class="fu">filterNot</span>(s =&gt; dfa.<span class="fu">transitions</span>.<span class="fu">exists</span>(t =&gt; t.<span class="fu">from</span> == s))
+<span class="co">// we do not want the pairs with a state in [ss]</span>
+_starts.<span class="fu">filterNot</span>(kv =&gt; ss.<span class="fu">contains</span>(kv.<span class="fu">_1</span>))
+}
+
+<span class="kw">def</span> <span class="fu">applyAvailableTransitions</span>(_starts: =&gt; Set[(State[String],String)]): Set[(State[String],String)] = {
+<span class="kw">def</span> <span class="fu">f1</span>(acc: Set[(State[String],String)], kv: (State[String],String)): Set[(State[String],String)] = {
+<span class="co">// get all transitions starting from k</span>
+<span class="kw">val</span> kTransitions = dfa.<span class="fu">transitions</span>.<span class="fu">filter</span>(t =&gt; t.<span class="fu">from</span> == kv.<span class="fu">_1</span>)
+<span class="co">// apply transition</span>
+<span class="kw">val</span> pacc = kTransitions.<span class="fu">map</span>(t =&gt; (t.<span class="fu">to</span>,kv.<span class="fu">_2</span> + t.<span class="fu">label</span>.<span class="fu">word</span>))
+acc ++ pacc
+}
+_starts.<span class="fu">foldLeft</span>(Set():(Set[(State[String],String)]))(f1)
+}
+
+<span class="kw">def</span> <span class="fu">solve1</span>(_starts: =&gt; Set[(State[String],String)], _acc: Set[String]): (Set[(State[String],String)],Set[String]) = {
+<span class="kw">lazy</span> <span class="kw">val</span> starts = _starts
+<span class="co">// we collect all the strings that are finished</span>
+<span class="kw">val</span> acc = <span class="fu">collectFinished</span>(starts,_acc)
+<span class="co">// then we clean all the states that are accepted and that</span>
+<span class="co">// cannot run a transition from _starts</span>
+<span class="kw">val</span> starts0 = <span class="fu">leaveOnlyTransitionable</span>(starts)
+<span class="co">// then we update [starts0] by applying the transitions</span>
+<span class="kw">val</span> starts1 = <span class="fu">applyAvailableTransitions</span>(starts0)
+(starts1,acc)
+}
+
+
+<span class="kw">def</span> <span class="fu">recsolve1</span>(_starts: =&gt; Set[(State[String],String)], _acc: Set[String]): Set[String] = {
+<span class="kw">lazy</span> <span class="kw">val</span> (starts,acc) = <span class="fu">solve1</span>(_starts,_acc)
+<span class="kw">if</span> (starts.<span class="fu">isEmpty</span>) {
+acc
+} <span class="kw">else</span> {<span class="fu">recsolve1</span>(starts,acc)}
+}
+
+<span class="fu">recsolve1</span>(Set((dfa.<span class="fu">start</span>,<span class="st">&quot;&quot;</span>)),Set())
+
+}
+}</code></pre></div>
+<p>Now that we have the core logic of the program, let's add the tests on laziness:</p>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">package</span> problem164scala
+
+<span class="kw">import</span> org.<span class="fu">scalatest</span>.<span class="fu">_</span>
+
+<span class="kw">class</span> GivenTests <span class="kw">extends</span> FunSuite <span class="kw">with</span> Matchers {
+
+<span class="kw">def</span> <span class="fu">makeDFA</span>(states: Set[String], alphabet: Set[String], start: String, accepts: Set[String], transitions: Set[(String,String,String)]) = {
+<span class="kw">val</span> states1 = states.<span class="fu">map</span>((x:String) =&gt; State(x))
+<span class="kw">val</span> alphabet1 = alphabet.<span class="fu">map</span>((x:String) =&gt; <span class="fu">Word</span>(x))
+<span class="kw">val</span> start1 = State(start)
+<span class="kw">val</span> accepts1 = accepts.<span class="fu">map</span>((x:String) =&gt; State(x))
+<span class="kw">val</span> transitions1 = transitions.<span class="fu">map</span>((flt:(String,String,String)) =&gt; <span class="fu">Transition</span>(State(flt.<span class="fu">_1</span>), <span class="fu">Word</span>(flt.<span class="fu">_2</span>), State(flt.<span class="fu">_3</span>)))
+<span class="fu">DFA</span>(states1,alphabet1,start1,accepts1,transitions1)
+}
+
+<span class="fu">test</span>(<span class="st">&quot;produce stream {&#39;a&#39; &#39;ab&#39; &#39;abc&#39;} for the given DFA&quot;</span>) {
+<span class="kw">val</span> states = Set(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;q3&quot;</span>)
+<span class="kw">val</span> alphabet = Set(<span class="st">&quot;a&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;c&quot;</span>)
+<span class="kw">val</span> start = <span class="st">&quot;q0&quot;</span>
+<span class="kw">val</span> accepts = Set(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;q3&quot;</span>)
+<span class="kw">val</span> transitions = Set((<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;a&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;b&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;c&quot;</span>,<span class="st">&quot;q3&quot;</span>))
+<span class="kw">val</span> dfa = <span class="fu">makeDFA</span>(states,alphabet,start,accepts,transitions)
+Solution.<span class="fu">solve</span>(dfa) should <span class="fu">be</span> (Stream(<span class="st">&quot;a&quot;</span>,<span class="st">&quot;ab&quot;</span>,<span class="st">&quot;abc&quot;</span>))
+}
+
+<span class="fu">test</span>(<span class="st">&quot;produce a stream {&#39;hi&#39; &#39;hey&#39; &#39;hello&#39;} for the given DFA&quot;</span>) {
+<span class="kw">val</span> states = Set(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;q4&quot;</span>,<span class="st">&quot;q5&quot;</span>,<span class="st">&quot;q6&quot;</span>,<span class="st">&quot;q7&quot;</span>)
+<span class="kw">val</span> alphabet = Set(<span class="st">&quot;e&quot;</span>,<span class="st">&quot;h&quot;</span>,<span class="st">&quot;i&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;o&quot;</span>,<span class="st">&quot;y&quot;</span>)
+<span class="kw">val</span> start = <span class="st">&quot;q0&quot;</span>
+<span class="kw">val</span> accepts = Set(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;q4&quot;</span>,<span class="st">&quot;q7&quot;</span>)
+<span class="kw">val</span> transitions = Set((<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;h&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;i&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;e&quot;</span>,<span class="st">&quot;q3&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;q5&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;q4&quot;</span>),(<span class="st">&quot;q5&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;q6&quot;</span>),(<span class="st">&quot;q6&quot;</span>,<span class="st">&quot;o&quot;</span>,<span class="st">&quot;q7&quot;</span>))
+<span class="kw">val</span> dfa = <span class="fu">makeDFA</span>(states,alphabet,start,accepts,transitions)
+Solution.<span class="fu">solve</span>(dfa) should <span class="fu">be</span> (Stream(<span class="st">&quot;hi&quot;</span>,<span class="st">&quot;hey&quot;</span>,<span class="st">&quot;hello&quot;</span>))
+}
+
+
+<span class="fu">test</span>(<span class="st">&quot;produce stream created by list comprehension for the given DFA&quot;</span>) {
+<span class="kw">val</span> states = Set(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;q4&quot;</span>)
+<span class="kw">val</span> alphabet = Set(<span class="st">&quot;v&quot;</span>,<span class="st">&quot;w&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;z&quot;</span>)
+<span class="kw">val</span> start = <span class="st">&quot;q0&quot;</span>
+<span class="kw">val</span> accepts = Set(<span class="st">&quot;q4&quot;</span>)
+<span class="kw">val</span> transitions = Set((<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;v&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;w&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;z&quot;</span>,<span class="st">&quot;q1&quot;</span>),
+         (<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;v&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;w&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;z&quot;</span>,<span class="st">&quot;q2&quot;</span>),
+         (<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;v&quot;</span>,<span class="st">&quot;q3&quot;</span>),(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;w&quot;</span>,<span class="st">&quot;q3&quot;</span>),(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;q3&quot;</span>),(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;q3&quot;</span>),(<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;z&quot;</span>,<span class="st">&quot;q3&quot;</span>),
+         (<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;v&quot;</span>,<span class="st">&quot;q4&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;w&quot;</span>,<span class="st">&quot;q4&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;q4&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;q4&quot;</span>),(<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;z&quot;</span>,<span class="st">&quot;q4&quot;</span>))
+<span class="kw">val</span> dfa = <span class="fu">makeDFA</span>(states,alphabet,start,accepts,transitions)
+<span class="kw">val</span> s = <span class="st">&quot;vwxyz&quot;</span>
+<span class="kw">val</span> result =
+(<span class="kw">for</span>
+(v &lt;- <span class="dv">0</span> until <span class="dv">5</span>;
+w &lt;- <span class="dv">0</span> until <span class="dv">5</span>;
+x &lt;- <span class="dv">0</span> until <span class="dv">5</span>;
+y &lt;- <span class="dv">0</span> until <span class="dv">5</span>) 
+<span class="kw">yield</span>
+(<span class="fu">s</span>(v)::<span class="fu">s</span>(w)::<span class="fu">s</span>(x)::<span class="fu">s</span>(y)::Nil).<span class="fu">mkString</span>
+)
+Solution.<span class="fu">solve</span>(dfa).<span class="fu">sorted</span> should <span class="fu">be</span> (result.<span class="fu">sorted</span>.<span class="fu">toStream</span>)
+}
+
+<span class="fu">test</span>(<span class="st">&quot;produce stream 01 for the given DFA and test by property&quot;</span>) {
+<span class="kw">val</span> states = Set(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;q1&quot;</span>)
+<span class="kw">val</span> alphabet = Set(<span class="st">&quot;0&quot;</span>,<span class="st">&quot;1&quot;</span>)
+<span class="kw">val</span> start = <span class="st">&quot;q0&quot;</span>
+<span class="kw">val</span> accepts = Set(<span class="st">&quot;q0&quot;</span>)
+<span class="kw">val</span> transitions = Set((<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;0&quot;</span>,<span class="st">&quot;q0&quot;</span>),(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;1&quot;</span>,<span class="st">&quot;q1&quot;</span>),
+         (<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;0&quot;</span>,<span class="st">&quot;q1&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;1&quot;</span>,<span class="st">&quot;q0&quot;</span>))
+<span class="kw">val</span> dfa = <span class="fu">makeDFA</span>(states,alphabet,start,accepts,transitions)
+<span class="kw">val</span> stream = Solution.<span class="fu">solve</span>(dfa)
+<span class="kw">val</span> res = stream.<span class="fu">take</span>(<span class="dv">2000</span>)
+<span class="kw">val</span> pred1 = res.<span class="fu">forall</span>(s =&gt; s.<span class="fu">matches</span>(<span class="st">&quot;&quot;&quot;0*(?:10*10*)*&quot;&quot;&quot;</span>.<span class="fu">r</span>.<span class="fu">toString</span>()))
+<span class="kw">val</span> pred2 = res == res.<span class="fu">distinct</span>
+(pred1 &amp;&amp; pred2) should <span class="fu">be</span> (<span class="kw">true</span>)
+}
+
+
+<span class="fu">test</span>(<span class="st">&quot;produce stream nm for the given DFA and test by property&quot;</span>) {
+<span class="kw">val</span> states = Set(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;q1&quot;</span>)
+<span class="kw">val</span> alphabet = Set(<span class="st">&quot;n&quot;</span>,<span class="st">&quot;m&quot;</span>)
+<span class="kw">val</span> start = <span class="st">&quot;q0&quot;</span>
+<span class="kw">val</span> accepts = Set(<span class="st">&quot;q1&quot;</span>)
+<span class="kw">val</span> transitions = Set((<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;n&quot;</span>,<span class="st">&quot;q0&quot;</span>),(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;m&quot;</span>,<span class="st">&quot;q1&quot;</span>))
+<span class="kw">val</span> dfa = <span class="fu">makeDFA</span>(states,alphabet,start,accepts,transitions)
+<span class="kw">val</span> stream = Solution.<span class="fu">solve</span>(dfa)
+<span class="kw">val</span> res = stream.<span class="fu">take</span>(<span class="dv">2000</span>)
+<span class="kw">val</span> pred1 = res.<span class="fu">forall</span>(s =&gt; s.<span class="fu">matches</span>(<span class="st">&quot;&quot;&quot;n*m&quot;&quot;&quot;</span>.<span class="fu">r</span>.<span class="fu">toString</span>()))
+<span class="kw">val</span> pred2 = res == res.<span class="fu">distinct</span>
+(pred1 &amp;&amp; pred2) should <span class="fu">be</span> (<span class="kw">true</span>)
+}
+
+
+<span class="fu">test</span>(<span class="st">&quot;produce stream ilompt for the given DFA and test by property&quot;</span>) {
+<span class="kw">val</span> states = Set(<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;q4&quot;</span>,<span class="st">&quot;q5&quot;</span>,<span class="st">&quot;q6&quot;</span>,<span class="st">&quot;q7&quot;</span>,<span class="st">&quot;q8&quot;</span>,<span class="st">&quot;q9&quot;</span>)
+<span class="kw">val</span> alphabet = Set(<span class="st">&quot;i&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;o&quot;</span>,<span class="st">&quot;m&quot;</span>,<span class="st">&quot;p&quot;</span>,<span class="st">&quot;t&quot;</span>)
+<span class="kw">val</span> start = <span class="st">&quot;q0&quot;</span>
+<span class="kw">val</span> accepts = Set(<span class="st">&quot;q5&quot;</span>,<span class="st">&quot;q8&quot;</span>)
+<span class="kw">val</span> transitions = Set((<span class="st">&quot;q0&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;q1&quot;</span>),
+         (<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;i&quot;</span>,<span class="st">&quot;q2&quot;</span>),(<span class="st">&quot;q1&quot;</span>,<span class="st">&quot;o&quot;</span>,<span class="st">&quot;q6&quot;</span>),
+         (<span class="st">&quot;q2&quot;</span>,<span class="st">&quot;m&quot;</span>,<span class="st">&quot;q3&quot;</span>),
+         (<span class="st">&quot;q3&quot;</span>,<span class="st">&quot;i&quot;</span>,<span class="st">&quot;q4&quot;</span>),
+         (<span class="st">&quot;q4&quot;</span>,<span class="st">&quot;t&quot;</span>,<span class="st">&quot;q5&quot;</span>),
+         (<span class="st">&quot;q6&quot;</span>,<span class="st">&quot;o&quot;</span>,<span class="st">&quot;q7&quot;</span>),
+         (<span class="st">&quot;q7&quot;</span>,<span class="st">&quot;p&quot;</span>,<span class="st">&quot;q8&quot;</span>),
+         (<span class="st">&quot;q8&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;q9&quot;</span>),
+         (<span class="st">&quot;q9&quot;</span>,<span class="st">&quot;o&quot;</span>,<span class="st">&quot;q6&quot;</span>))
+<span class="kw">val</span> dfa = <span class="fu">makeDFA</span>(states,alphabet,start,accepts,transitions)
+<span class="kw">val</span> stream = Solution.<span class="fu">solve</span>(dfa)
+<span class="kw">val</span> res = stream.<span class="fu">take</span>(<span class="dv">2000</span>)
+<span class="kw">val</span> pred1 = res.<span class="fu">forall</span>(s =&gt; s.<span class="fu">matches</span>(<span class="st">&quot;&quot;&quot;limit|(?:loop)+&quot;&quot;&quot;</span>.<span class="fu">r</span>.<span class="fu">toString</span>()))
+<span class="kw">val</span> pred2 = res == res.<span class="fu">distinct</span>
+(pred1 &amp;&amp; pred2) should <span class="fu">be</span> (<span class="kw">true</span>)
+}
+}</code></pre></div>
+<p>We add laziness to the logic of the program by introducing the Stream (also let's use Seq instead of Sets):</p>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">package</span> problem164scala
+
+<span class="kw">case</span> <span class="kw">class</span> State[S](state: S)
+
+<span class="kw">case</span> <span class="kw">class</span> Word[W](word: W)
+
+<span class="kw">case</span> <span class="kw">class</span> Transition[S,W](from: State[S], label: Word[W], to: State[S])
+
+<span class="kw">case</span> <span class="kw">class</span> DFA[S,W](states: Set[State[S]], alphabet: Set[Word[W]], start: State[S], accepts: Set[State[S]], transitions: Set[Transition[S,W]])
+
+<span class="kw">object</span> Solution {
+
+<span class="kw">def</span> <span class="fu">solve</span>(_dfa: =&gt; DFA[String,String]): Stream[String] = {
+<span class="kw">lazy</span> <span class="kw">val</span> dfa = _dfa
+<span class="kw">def</span> <span class="fu">collectFinished</span>(_starts: Seq[(State[String],String)], _acc: Seq[String]) : Seq[String] = {
+<span class="kw">lazy</span> <span class="kw">val</span> starts = _starts
+<span class="kw">def</span> <span class="fu">f1</span>(acc: Seq[String], kv: (State[String],String)) : Seq[String] = {
+kv <span class="kw">match</span> {
+<span class="kw">case</span> (k,v) =&gt; {
+dfa.<span class="fu">accepts</span>.<span class="fu">contains</span>(k) <span class="kw">match</span> {
+<span class="kw">case</span> <span class="kw">true</span> =&gt; <span class="co">// we can return the string</span>
+acc :+ v
+<span class="kw">case</span> <span class="kw">false</span> =&gt; <span class="co">//we cannot return the string</span>
+acc
+}
+}
+}
+}
+starts.<span class="fu">foldLeft</span>(_acc)(f1)      
+}
+
+<span class="kw">def</span> <span class="fu">leaveOnlyTransitionable</span>(_starts: Seq[(State[String],String)]): Seq[(State[String],String)] = {
+<span class="co">// get all accepted states from which no transition start</span>
+<span class="kw">val</span> ss = dfa.<span class="fu">accepts</span>.<span class="fu">filterNot</span>(s =&gt; dfa.<span class="fu">transitions</span>.<span class="fu">exists</span>(t =&gt; t.<span class="fu">from</span> == s))
+<span class="co">// we do not want the pairs with a state in [ss]</span>
+_starts.<span class="fu">filterNot</span>(kv =&gt; ss.<span class="fu">contains</span>(kv.<span class="fu">_1</span>))
+}
+
+<span class="kw">def</span> <span class="fu">applyAvailableTransitions</span>(_starts: Seq[(State[String],String)]): Seq[(State[String],String)] = {
+<span class="kw">def</span> <span class="fu">f1</span>(acc: Seq[(State[String],String)], kv: (State[String],String)): Seq[(State[String],String)] = {
+<span class="co">// get all transitions starting from k</span>
+<span class="kw">val</span> kTransitions = dfa.<span class="fu">transitions</span>.<span class="fu">filter</span>(t =&gt; t.<span class="fu">from</span> == kv.<span class="fu">_1</span>)
+<span class="co">// apply transition</span>
+<span class="kw">val</span> pacc = kTransitions.<span class="fu">map</span>(t =&gt; (t.<span class="fu">to</span>,kv.<span class="fu">_2</span> + t.<span class="fu">label</span>.<span class="fu">word</span>))
+acc ++ pacc
+}
+_starts.<span class="fu">foldLeft</span>(List().<span class="fu">view</span>:(Seq[(State[String],String)]))(f1)
+}
+
+<span class="kw">def</span> <span class="fu">solve1</span>(_starts: Seq[(State[String],String)], _acc: Seq[String]): (Seq[(State[String],String)],Seq[String]) = {
+<span class="kw">lazy</span> <span class="kw">val</span> starts = _starts
+<span class="co">// we collect all the strings that are finished</span>
+<span class="kw">val</span> acc = <span class="fu">collectFinished</span>(starts,List().<span class="fu">view</span>)
+<span class="co">// then we clean all the states that are accepted and that</span>
+<span class="co">// cannot run a transition from _starts</span>
+<span class="kw">val</span> starts0 = <span class="fu">leaveOnlyTransitionable</span>(starts)
+<span class="co">// then we update [starts0] by applying the transitions</span>
+<span class="kw">val</span> starts1 = <span class="fu">applyAvailableTransitions</span>(starts0)
+(starts1,acc)
+}
+
+
+<span class="kw">def</span> <span class="fu">recsolve1</span>(_starts: Seq[(State[String],String)], _acc: Seq[String]): Stream[String] = {
+<span class="kw">val</span> (starts,acc) = <span class="fu">solve1</span>(_starts,_acc)
+<span class="kw">if</span> (starts.<span class="fu">isEmpty</span>) {
+acc.<span class="fu">toStream</span>
+} <span class="kw">else</span> {acc.<span class="fu">toStream</span> #::: <span class="fu">recsolve1</span>(starts,acc.<span class="fu">view</span>)}
+}
+
+<span class="fu">recsolve1</span>(List((dfa.<span class="fu">start</span>,<span class="st">&quot;&quot;</span>)), List())
+
+}
+}</code></pre></div>
+<p>Finally, let's check that all tests pass:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">sbt</span> test</code></pre></div>
+</body>
+</html>

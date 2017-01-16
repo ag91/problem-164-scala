@@ -1,0 +1,26 @@
+(
+ :root-dir "/tmp/problem-164-in-scala/problem164scala"
+ :cache-dir "/tmp/problem-164-in-scala/problem164scala/.ensime_cache"
+ :scala-compiler-jars ("/home/andrea/.sbt/boot/scala-2.10.6/lib/scala-compiler.jar" "/home/andrea/.sbt/boot/scala-2.10.6/lib/scala-library.jar" "/home/andrea/.sbt/boot/scala-2.10.6/lib/scala-reflect.jar" "/home/andrea/.ivy2/cache/org.scala-lang/scalap/jars/scalap-2.10.6.jar")
+ :name "problem164scala"
+ :java-home "/nix/store/z0v0aqxgzqgn2n0xl3vwrnnjlqp4chfb-openjdk-8u122b04/lib/openjdk"
+ :java-flags ("-Xss2m" "-Xms1024m" "-Xmx1024m" "-XX:ReservedCodeCacheSize=128m" "-XX:MaxMetaspaceSize=256m")
+ :java-compiler-args nil
+ :reference-source-roots ("/nix/store/z0v0aqxgzqgn2n0xl3vwrnnjlqp4chfb-openjdk-8u122b04/lib/openjdk/src.zip")
+ :scala-version "2.10.6"
+ :compiler-args ("-feature" "-deprecation" "-Xlint" "-Yinline-warnings" "-Yno-adapted-args" "-Ywarn-dead-code" "-Ywarn-numeric-widen" "-Xfuture")
+ :formatting-prefs nil
+ :disable-source-monitoring nil
+ :disable-class-monitoring nil
+ :subprojects ((
+   :name "problem164scala"
+   :source-roots ("/tmp/problem-164-in-scala/problem164scala/src/main/scala" "/tmp/problem-164-in-scala/problem164scala/src/test/scala")
+   :targets ("/tmp/problem-164-in-scala/problem164scala/target/scala-2.10/classes")
+   :test-targets ("/tmp/problem-164-in-scala/problem164scala/target/scala-2.10/test-classes")
+   :depends-on-modules nil
+   :compile-deps ("/home/andrea/.sbt/boot/scala-2.10.6/lib/scala-library.jar" "/home/andrea/.sbt/boot/scala-2.10.6/lib/scala-reflect.jar" "/home/andrea/.ivy2/cache/org.scalactic/scalactic_2.10/bundles/scalactic_2.10-3.0.1.jar")
+   :runtime-deps nil
+   :test-deps ("/home/andrea/.ivy2/cache/org.scalatest/scalatest_2.10/bundles/scalatest_2.10-3.0.1.jar")
+   :doc-jars ("/tmp/problem-164-in-scala/problem164scala/target/scala-2.10/problem164scala_2.10-0.1-SNAPSHOT-javadoc.jar" "/home/andrea/.ivy2/cache/org.scala-lang/scala-library/docs/scala-library-2.10.6-javadoc.jar" "/home/andrea/.ivy2/cache/org.scala-lang/scala-reflect/docs/scala-reflect-2.10.6-javadoc.jar" "/home/andrea/.ivy2/cache/org.scalactic/scalactic_2.10/docs/scalactic_2.10-3.0.1-javadoc.jar" "/home/andrea/.ivy2/cache/org.scalatest/scalatest_2.10/docs/scalatest_2.10-3.0.1-javadoc.jar")
+   :reference-source-roots ("/home/andrea/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.6-sources.jar" "/home/andrea/.ivy2/cache/org.scala-lang/scala-reflect/srcs/scala-reflect-2.10.6-sources.jar" "/home/andrea/.ivy2/cache/org.scalactic/scalactic_2.10/srcs/scalactic_2.10-3.0.1-sources.jar" "/home/andrea/.ivy2/cache/org.scalatest/scalatest_2.10/srcs/scalatest_2.10-3.0.1-sources.jar")))
+)
