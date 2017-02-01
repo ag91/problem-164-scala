@@ -225,7 +225,7 @@ recsolve1(Set((dfa.start,"")),Set())
 Now that we have the core logic of the program, let's add the tests
 on laziness:
 
-#+BEGIN_SRC scala :noeval :tangle /tmp/problem-164-in-scala/problem164scala/src/test/scala/GivenTests.scala
+#+BEGIN_SRC scala :noeval :mkdirp yes :tangle /tmp/problem-164-scala/problem164scala/src/test/scala/GivenTests.scala
 package problem164scala
 
 import org.scalatest._
@@ -343,7 +343,7 @@ val pred2 = res == res.distinct
 We add laziness to the logic of the program by introducing the
 Stream (also let's use Seq instead of Sets):
 
-#+BEGIN_SRC scala :noeval :tangle /tmp/problem-164-in-scala/problem164scala/src/main/scala/Solution.scala
+#+BEGIN_SRC scala :noeval :mkdirp yes :tangle /tmp/problem-164-scala/problem164scala/src/main/scala/Solution.scala
 package problem164scala
 
 case class State[S](state: S)
@@ -421,14 +421,26 @@ recsolve1(List((dfa.start,"")), List())
 
 Finally, let's check that all tests pass:
 
-#+BEGIN_SRC sh :results example output :dir /tmp/problem-164-in-scala/problem164scala
+#+BEGIN_SRC sh :results example output :dir /tmp/problem-164-scala/problem164scala
 sbt test
 #+END_SRC
 
 #+RESULTS:
 #+begin_example
 [info] Loading global plugins from /home/andrea/.sbt/0.13/plugins
-[info] Set current project to problem154scala (in build file:/tmp/problem-164-in-scala/problem154scala/)
+[info] Set current project to problem164scala (in build file:/tmp/problem-164-scala/problem164scala/)
+[info] Updating {file:/tmp/problem-164-scala/problem164scala/}problem164scala...
+[info] Resolving org.scala-lang#scala-library;2.10.6 ...
+[info] Resolving org.scalactic#scalactic_2.10;3.0.1 ...
+[info] Resolving org.scala-lang#scala-reflect;2.10.6 ...
+[info] Resolving org.scalatest#scalatest_2.10;3.0.1 ...
+[info] Resolving org.scala-lang#scala-compiler;2.10.6 ...
+[info] Resolving org.scala-lang#jline;2.10.6 ...
+[info] Resolving org.fusesource.jansi#jansi;1.4 ...
+[info] Resolving org.scala-lang#scalap;2.10.6 ...
+[info] Done updating.
+[info] Compiling 1 Scala source to /tmp/problem-164-scala/problem164scala/target/scala-2.10/classes...
+[info] Compiling 1 Scala source to /tmp/problem-164-scala/problem164scala/target/scala-2.10/test-classes...
 [info] GivenTests:
 [info] - produce stream {'a' 'ab' 'abc'} for the given DFA
 [info] - produce a stream {'hi' 'hey' 'hello'} for the given DFA
@@ -436,10 +448,10 @@ sbt test
 [info] - produce stream 01 for the given DFA and test by property
 [info] - produce stream nm for the given DFA and test by property
 [info] - produce stream ilompt for the given DFA and test by property
-[info] Run completed in 1 second, 588 milliseconds.
+[info] Run completed in 1 second, 761 milliseconds.
 [info] Total number of tests run: 6
 [info] Suites: completed 1, aborted 0
 [info] Tests: succeeded 6, failed 0, canceled 0, ignored 0, pending 0
 [info] All tests passed.
-[success] Total time: 2 s, completed 16-Jan-2017 15:32:29
+[success] Total time: 6 s, completed 01-Feb-2017 00:38:49
 #+end_example
